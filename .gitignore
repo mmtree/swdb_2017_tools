@@ -1,3 +1,7 @@
+*.ipynb
+*.pickle
+*.pkl
+*.jpg
 *.pyc
 *.DS_Store
 *.vscode
