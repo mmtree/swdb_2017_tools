@@ -1,4 +1,5 @@
 *.ipynb
+*-checkpoint.ipynb
 *.pickle
 *.pkl
 *.jpg
