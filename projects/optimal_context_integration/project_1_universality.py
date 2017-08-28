@@ -56,3 +56,16 @@ with open('conv_result.pickle', 'wb') as handle:
 #    b = pickle.load(handle)
 
 
+conv_spar_images = {}
+#size of conv_images:
+row_num,col_num = np.shape(conv_result['conv_images'][0][0])
+# this cord is the sparcifing index for those conv_images:
+cord = np.meshgrid(range(0,row_num,7),range(0,col_num,7))
+for i in range(0,18):
+    temp = []
+    for j in range(0,137):
+        image_temp = conv_result['conv_images'][i][j]
+        temp.append(image_temp[cord[0],cord[1]].T)
+    conv_spar_images[i]=temp
+with open('conv_spar_images.pickle', 'wb') as handle:
+    pickle.dump(conv_spar_images, handle)
