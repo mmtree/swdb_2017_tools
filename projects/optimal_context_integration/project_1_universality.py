@@ -1,12 +1,17 @@
-
-
-
 import os
 import numpy as np
 import matplotlib.pylab as plt
 import pandas as pd
 import math
+import pickle
 
+
+###########################################################################################
+################### Load the W which is the theoritical W.             ####################
+with open('W_dict.pickle', 'rb') as handle:
+    W_dict = pickle.load(handle)
+################### W_dict[(k1,k2)] is the 9-by-9 W matrix.            ####################
+###########################################################################################
 
 
 ## First average along all k1, k2 values
