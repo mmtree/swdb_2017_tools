@@ -1,58 +1,44 @@
+
 import os
 import numpy as np
 import matplotlib.pylab as plt
 import pandas as pd
-#%matplotlib inline
+import math
+
+## First average along all k1, k2 values
+Avg_block = np.zeros([9,9])
+for k1 = 1:18
+    for k2 = 1:18
+        Avg_block = Avg_block + W(k1,k2)       # add all values in each W cell along each k1, k2
+        
+Avg_block = Avg_block/(18*18) 
 
 
 
-drive_path = '/home/zhixinl/swdb_2017_tools/projects/optimal_context_integration/'
-mypath = os.path.join(drive_path,'images/')
-image_file_names = [os.path.join(drive_path,'images/',f) for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))]
-#get list of images
-images_list = [(1.0/255)*np.mean(plt.imread(image_file_name),2) for image_file_name in image_file_names]
-images_size = [np.shape(image) for image in images_list]
-#get all images into the list which has size 321,481:
-long_images=[]
-long_images_name = []
-for i in range(0,200):
-    if images_size[i]==(321,481):
-        long_images.append(images_list[i])
-        long_images_name.append(image_file_names[i])
 
 
-#get all the filters from the matlab file:
-import scipy.io as spio
-#loadmat
-filters_mat = spio.loadmat(os.path.join(drive_path,'ephys_data_filts.mat'))
-filters_origin = [filters_mat['data_filts'][0][i] for i in range(0,18)]
-#make filters mean zero:
-filters=[f-np.mean(f) for f in filters_origin]
+dist_vec = np.array([0, 1, 2, 3, 4, math.sqrt(2), math.sqrt(5), math.sqrt(10), math.sqrt(17),
+                    2*math.sqrt(2), math.sqrt(13), math.sqrt(20), 3*math.sqrt(2), 5, 4*math.sqrt(2)])
+
+dist_vec = sorted(dist_vec)
+print(dist_vec)
 
 
 
-#do the convolution for images with different filters:
-from scipy import signal
 
-conv_long_images = {}#{'filter_index':'images'}
-conv_long_images_name = {}#{'filter_index':'images_name'}
-for i in range(0,len(filters)):
-    temp_imag = []
-    temp_name = []
-    for j in range(0,len(long_images)):
-        type(temp_imag)
-        temp_imag.append(signal.convolve2d(long_images[j], filters[i], mode='valid'))
-        temp_name.append(long_images_name[i])
-    conv_long_images[i] = temp_imag
-    conv_long_images_name[i] = temp_name
-#save the dict
-import pickle
-conv_result = {'image_names': conv_long_images_name, 'conv_images': conv_long_images }
-with open('conv_result.pickle', 'wb') as handle:
-    pickle.dump(conv_result, handle)
+## Next average for each distance, group like distances
+dist_given_row_col = {}#keys:[(row,col)], values:[distance]
 
-#Get the previously calculated conv images:
-#with open('conv_result.pickle', 'rb') as handle:
-#    b = pickle.load(handle)
-
-
+for row in range(0,9):
+    for col in range(0,9):
+        
+        dist_given_row_col.setdefault(math.sqrt((row-4)**2+(col-4)**2),[]).append((row,col))
+dist_list=dist_given_row_col.keys
+W_dist = []
+for dist in dist_list:
+    temp = 0.0
+    for row,col in dist_given_row_col[dist]:
+        temp+=W[row,col]
+    temp = temp*(1.0/len(dist_given_row_col[dist]))
+    W_dist.append(temp)
+plt.plot(dist_list,W_dist,'o-')
