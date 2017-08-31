@@ -10,6 +10,12 @@ import math
 from random import shuffle
 
 
+import warnings
+
+warnings.filterwarnings('error','invalid value encountered in multiply',RuntimeWarning)
+
+
+
 #%matplotlib inline
 
 drive_path = '/home/zhixinl/swdb_2017_tools/projects/optimal_context_integration/'
@@ -115,10 +121,14 @@ for i in range(0,len(rand_learning_order)):
                     #f_k2_n2s_previous:
                     #the vectorized f_k2_n2_s(t-1) (along x:[center_possible_row_index], y:[center_possible_col_index])
                     f_k2_n2s_previous = conv_spar_images[k2][rand_learning_order[i-1],center_possible_row_index,center_possible_col_index]
+                    if i-1<0:
+                        f_k2_n2s_previous = 0.0*f_k2_n2s_previous
                     ###########################
                     #f_k1_n1s_previous:
                     #the vectorized f_k1_n1_s(t-1) (along x:[center_possible_row_index + delta_n_x, y:[center_possible_col_index + delta_n_y])
                     f_k1_n1s_previous = conv_spar_images[k1][rand_learning_order[i-1],center_possible_row_index+delta_n_x, center_possible_col_index+delta_n_y]
+                    if i-1<0:
+                        f_k1_n1s_previous = 0.0*f_k1_n1s_previous
                     ###########################
                     #f_k2_n2s_history_sum:
                     #the vectorized f_k2_n2_s_upto(t) (along x:[center_possible_row_index], y:[center_possible_col_index])
