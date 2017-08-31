@@ -58,11 +58,11 @@ center_possible_col_index = np.array(center_possible_col_index)
 ##############################################################################
 
 
-#make a list of randomly ordered image indexs that go through training set for 10 times.
+#make a list of randomly ordered image indexs that go through training set for 20 times.
 #rand_learning_order:
 learning_order = range(0,137)
 rand_learning_order=[]
-for i in range(0,10):
+for i in range(0,20):
     shuffle(learning_order)
     if i>0:
         while learning_order[0]==rand_learning_order[-1]:
@@ -79,7 +79,7 @@ W_hb_result_list = [W_hb]
 W_batch_avg = np.zeros([18,18,9,9])
 W_batch_avg_temp = np.zeros([18,18,9,9]) #this is for dump into avg every 10 steps
 #define learning rate as ita=0.0001
-eta = 0.0001
+eta = 0.001
 ############################################################################################
 #for loop starts from the second picture and compare with the previous image to get delta_W:
 f_k1_n1s_history_sum = np.zeros((18,18,9,9,len(center_possible_row_index)))
