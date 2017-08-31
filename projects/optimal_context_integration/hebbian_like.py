@@ -82,6 +82,8 @@ W_batch_avg_temp = np.zeros([18,18,9,9]) #this is for dump into avg every 10 ste
 eta = 0.0001
 ############################################################################################
 #for loop starts from the second picture and compare with the previous image to get delta_W:
+f_k1_n1s_history_sum = np.zeros((18,18,9,9,len(center_possible_row_index)))
+f_k2_n2s_history_sum = np.zeros((18,18,9,9,len(center_possible_row_index)))
 for i in range(0,len(rand_learning_order)):
     #########
     #batch number = 10.0
@@ -91,8 +93,6 @@ for i in range(0,len(rand_learning_order)):
     #########
     #calculate delta W: delta_W
     delta_W=np.zeros([18,18,9,9])
-    f_k1_n1s_history_sum = np.zeros((18,len(center_possible_row_index)))
-    f_k2_n2s_history_sum = np.zeros((18,len(center_possible_row_index)))
     for k1 in range(0,18):
         for k2 in range(0,18):
             #this part is for between filter k1 filter k2:
@@ -121,31 +121,31 @@ for i in range(0,len(rand_learning_order)):
                     #f_k2_n2s_previous:
                     #the vectorized f_k2_n2_s(t-1) (along x:[center_possible_row_index], y:[center_possible_col_index])
                     f_k2_n2s_previous = conv_spar_images[k2][rand_learning_order[i-1],center_possible_row_index,center_possible_col_index]
-                    if i-1<0:
+                    if i==0:
                         f_k2_n2s_previous = 0.0*f_k2_n2s_previous
                     ###########################
                     #f_k1_n1s_previous:
                     #the vectorized f_k1_n1_s(t-1) (along x:[center_possible_row_index + delta_n_x, y:[center_possible_col_index + delta_n_y])
                     f_k1_n1s_previous = conv_spar_images[k1][rand_learning_order[i-1],center_possible_row_index+delta_n_x, center_possible_col_index+delta_n_y]
-                    if i-1<0:
+                    if i==0:
                         f_k1_n1s_previous = 0.0*f_k1_n1s_previous
                     ###########################
                     #f_k2_n2s_history_sum:
                     #the vectorized f_k2_n2_s_upto(t) (along x:[center_possible_row_index], y:[center_possible_col_index])
-                    f_k2_n2s_history_sum[k2,:] = f_k2_n2s_history_sum[k2,:] + f_k2_n2s_current
+                    f_k2_n2s_history_sum[k1,k2,delta_n_x+4,delta_n_y+4,:] = f_k2_n2s_history_sum[k1,k2,delta_n_x+4,delta_n_y+4,:] + f_k2_n2s_current
                     ###########################
                     #f_k1_n1s_history_sum:
                     #the vectorized f_k1_n1_s_upto(t) (along x:[center_possible_row_index + delta_n_x, y:[center_possible_col_index + delta_n_y])
-                    f_k1_n1s_history_sum[k1,:] = f_k1_n1s_history_sum[k1,:] + f_k1_n1s_current
+                    f_k1_n1s_history_sum[k1,k2,delta_n_x+4,delta_n_y+4,:] = f_k1_n1s_history_sum[k1,k2,delta_n_x+4,delta_n_y+4,:] + f_k1_n1s_current
                     ###########################
                     ##########################################################################################
                     ##########################################################################################
                     ###########################
                     #Now we compute the delta_W
                     ###########################
-                    temp_term_1 = np.divide(f_k1_n1s_current-f_k1_n1s_previous,f_k1_n1s_history_sum[k1,:])
+                    temp_term_1 = np.divide(f_k1_n1s_current-f_k1_n1s_previous,f_k1_n1s_history_sum[k1,k2,delta_n_x+4,delta_n_y+4,:])
                     temp_term_1[np.isnan(temp_term_1)]=0.0
-                    temp_term_2 = np.divide(f_k2_n2s_current-f_k2_n2s_previous,f_k2_n2s_history_sum[k2,:])
+                    temp_term_2 = np.divide(f_k2_n2s_current-f_k2_n2s_previous,f_k2_n2s_history_sum[k1,k2,delta_n_x+4,delta_n_y+4,:])
                     temp_term_2[np.isnan(temp_term_2)]=0.0
                     delta_W[k1,k2,delta_n_x+4,delta_n_y+4] = np.mean((1.0*(i+1.0)*(i+1.0))*np.multiply(temp_term_1,temp_term_2))-2.0*W_batch_avg[k1,k2,delta_n_x+4,delta_n_y+4]
                     #
