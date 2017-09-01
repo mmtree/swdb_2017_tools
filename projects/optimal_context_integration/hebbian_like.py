@@ -175,3 +175,8 @@ W_hb_result_list.append(W_theory)
 ################ SAVE THE Trajectory of W_hb as a list in W_hb_result_list ##################
 with open('W_hb_result_list.pickle', 'wb') as handle:
     pickle.dump(W_hb_result_list, handle)
+
+#for Matlab saving file:
+W_hb_result_matlab = np.array(W_hb_result_list)
+import scipy.io as sio
+sio.savemat('W_hb_result_matlab.mat', {'W_hb_result_matlab':W_hb_result_matlab})
